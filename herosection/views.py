@@ -2,15 +2,18 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from herosection.EmailBackEnd import EmailBackEnd
+from django.contrib import messages
 import datetime
+
+
 
 # Create your views here.
 def demo_page(request):
-    return render(request, 'herosection/demo.html')
+    return render(request, 'demo.html')
 
 #creating function in view.py for showing login page
 def showLoginPage(request):
-    return render(request,"herosection/login_page.html")
+    return render(request,"login_page.html")
 
 def doLogin(request):
     if request.method!="POST":
@@ -20,9 +23,11 @@ def doLogin(request):
         user= EmailBackEnd.authenticate(request,username=request.POST.get("email"),password=request.POST.get("password"))
         if user!=None:
             login(request,user)
-            return HttpResponse("Email: "+request.POST.get("email")+" Password: "+request.POST.get("password"))
+            # return HttpResponse("Email: "+request.POST.get("email")+" Password: "+request.POST.get("password"))
+            return HttpResponseRedirect('/admin_home')
         else:
-            return HttpResponse("Invalid Login")
+            messages.error(request,"Invalid Login Details")
+            return HttpResponseRedirect("/")
         
 def getUserDetails(request):
     if request.user!=None:
