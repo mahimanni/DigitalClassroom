@@ -41,3 +41,21 @@ def add_staff_save(request):
             messages.error(request, f"Failed to Add Staff: {error_message}")
             messages.error(request,"Failed to Add Staff")
             return HttpResponseRedirect(reverse("add_staff"))
+        
+def add_course(request):
+    return render(request,"hod_template/add_course_template.html")
+
+#creating function for save course data coming from Add course form 
+def add_course_save(request):
+    if request.method!="POST":
+        return HttpResponseRedirect("Method not allowed")
+    else:
+        course= request.POST.get("course")
+        try:
+            course_model= Courses(course_name=course)#object
+            course_model.save()
+            messages.success(request,"Successfully Added Course")
+            return HttpResponseRedirect("/add_course")
+        except:
+            messages.error(request,"Failed to Add Course")
+            return HttpResponseRedirect("/add course")
