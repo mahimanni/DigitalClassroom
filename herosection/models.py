@@ -31,7 +31,7 @@ class Staffs(models.Model):
     # name= models.CharField(max_length=255)
     # email= models.CharField(max_length=255)
     # password= models.CharField(max_length=255)
-    address= models.TextField()
+    address= models.TextField(blank=True, null=True)
     created_at= models.DateTimeField(auto_now_add=True)
     updated_at= models.DateTimeField(auto_now_add=True)
     objects= models.Manager()
@@ -182,7 +182,7 @@ def create_user_profile(sender,instance,created,**kwargs):#taking parameter send
         if instance.user_type==1:
             AdminHOD.objects.create(admin=instance)#here instance is CustomUser
         if instance.user_type==2:
-            Staffs.objects.create(admin=instance)#here instance is CustomUser and user_type is 2
+            Staffs.objects.create(admin=instance,address="")#here instance is CustomUser and user_type is 2
         if instance.user_type==3:
             Students.objects.create(admin=instance)#here instance is CustomUser
         
@@ -209,7 +209,7 @@ def save_user_profile(sender, instance, **kwargs):
     if instance.user_type == 2:
         try:
             # Fetch the Staffs instance and save it
-            staffs = Staffs.objects.get(admin=instance)
+            staffs = Staffs.objects.get(admin=instance,address="")
             staffs.save()
         except Staffs.DoesNotExist:
             pass  # Staff instance may not exist, no need to save it if it doesn't exist
