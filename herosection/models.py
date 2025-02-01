@@ -51,7 +51,7 @@ class Courses(models.Model):
 class Subjects(models.Model):
     id= models.AutoField(primary_key=True)
     subject_name= models.CharField(max_length=255)
-    course_id= models.ForeignKey(Courses, on_delete=models.CASCADE)#doing relation btw course id and subject
+    course_id= models.ForeignKey(Courses, on_delete=models.CASCADE, default=1)#doing relation btw course id and subject
     staff_id= models.ForeignKey(Staffs, on_delete=models.CASCADE)#adding staff field in subject model and linking using foreign key  
     created_at= models.DateTimeField(auto_now_add=True)
     updated_at= models.DateTimeField(auto_now_add=True)
@@ -184,7 +184,8 @@ def create_user_profile(sender,instance,created,**kwargs):#taking parameter send
         if instance.user_type==2:
             Staffs.objects.create(admin=instance,address="")#here instance is CustomUser and user_type is 2
         if instance.user_type==3:
-            Students.objects.create(admin=instance)#here instance is CustomUser
+            Students.objects.create(admin=instance,course_id=Courses.objects.get(id=1), session_start_year="2025-01-01", session_end_year="2028-01-01", address="", profile_pic="",gender="")
+            #now on student create method setting default value of every field
         
 #this method will call after create_user_profile() execution
 # @receiver(post_save, sender=CustomUser)
@@ -217,7 +218,7 @@ def save_user_profile(sender, instance, **kwargs):
     if instance.user_type == 3:
         try:
             # Fetch the Students instance and save it
-            students = Students.objects.get(admin=instance)
+            students = Students.objects.get(admin=instance,course_id=Courses.objects.get(id=1), session_start_year="2025-01-01", session_end_year="2028-01-01", address="", profile_pic="",gender="")
             students.save()
         except Students.DoesNotExist:
             pass  # Student instance may not exist, no need to save it if it doesn't exist

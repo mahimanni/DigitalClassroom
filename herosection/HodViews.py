@@ -59,3 +59,54 @@ def add_course_save(request):
         except:
             messages.error(request,"Failed to Add Course")
             return HttpResponseRedirect("/add course")
+        
+def add_student(request):
+    courses= Courses.objects.all() #pass course data
+    return render(request,"hod_template/add_student_template.html",{"courses": courses})#now passing the all Course into add_student_template.html
+
+def add_student_save(request):
+        if request.method!="POST":
+            return HttpResponse("Method not allowed")
+        else:
+            first_name= request.POST.get("first_name")
+            last_name=request.POST.get("last_name")
+            username=request.POST.get("username")
+            email=request.POST.get("email")
+            password=request.POST.get("password")
+            address=request.POST.get("address")
+            session_start= request.POST.get("session_start")
+            session_end= request.POST.get("session_end")
+            course_id= request.POST.get("course")
+            sex= request.POST.get("sex")
+            try:
+                #creating custom user object
+                user=CustomUser.objects.create_user(username=username,password=password,email=email,last_name=last_name,first_name=first_name,user_type=3)
+                # user.students.address = address 
+                # course_obj= Courses.objects.get(id=course_id) #creating course object from Course model
+                # user.students.course_id= course_obj #now passing the course object into user.students.course_id
+                # user.students.session_start_year= session_start
+                # user.students.session_end_year= session_end
+                # user.students.gender= sex
+                # user.students.profile_pic="" #setting an empty pic of student
+                # user.save()
+
+                # Fetch the related student instance
+                student = user.students  # Assuming a OneToOneField relation exists
+
+                student.address = address 
+                student.course_id = Courses.objects.get(id=course_id)  # Assigning Course object
+                student.session_start_year = session_start
+                student.session_end_year = session_end
+                student.gender = sex
+                student.profile_pic = ""  # Setting an empty profile picture
+
+                student.save()  # **Explicitly saving the student instance**
+
+                messages.success(request,"Successfully Added Student")
+                return HttpResponseRedirect(reverse("add_student"))
+            except Exception as e:
+                error_message = str(e)
+                traceback.print_exc()  # Print full error traceback in console (for debugging)
+                messages.error(request, f"Failed to Add Student: {error_message}")
+                messages.error(request,"Failed to Add Student")
+                return HttpResponseRedirect(reverse("add_student"))
