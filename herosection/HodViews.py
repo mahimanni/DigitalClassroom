@@ -110,3 +110,45 @@ def add_student_save(request):
                 messages.error(request, f"Failed to Add Student: {error_message}")
                 messages.error(request,"Failed to Add Student")
                 return HttpResponseRedirect(reverse("add_student"))
+
+def add_subject(request):
+    courses= Courses.objects.all()
+    staffs= CustomUser.objects.filter(user_type=2)#use .filter() as .get() is used for single data
+    return render(request,"hod_template/add_subject_template.html",{"staffs":staffs,"courses":courses})#now passing the data in template page as a dictionary passing staff in staffs object and course in courses object
+
+def add_subject_save(request):
+    if request.method!="POST":
+        return HttpResponse("<h2>Method not allowed</h2>")
+    else:
+        subject_name= request.POST.get("subject_name")
+        course_id= request.POST.get("course")
+        course= Courses.objects.get(id=course_id)
+        staff_id= request.POST.get("staff")
+        staff= CustomUser.objects.get(id=staff_id)
+
+        try:
+            # now creating new subject by calling Subject() and passing subject details
+            subject= Subjects(subject_name=subject_name, course_id=course, staff_id=staff)
+            subject.save()
+            messages.success(request,"Successfully Added Subject")
+            return HttpResponseRedirect("/add_subject")
+        except:
+            messages.error(request,"Failed to Add Subject")
+            return HttpResponseRedirect("/add_subject")
+        
+def manage_staff(request):
+    #now reading all staff data by calling method staffs.objects.all()
+    staffs= Staffs.objects.all()
+    return render(request,"hod_template/manage_staff_template.html",{"staffs":staffs})#passing the staff object
+
+def manage_student(request):
+    students= Students.objects.all()
+    return render(request,"hod_template/manage_student_template.html",{"students":students})#passing the staff object
+
+def manage_course(request):
+    courses= Courses.objects.all()
+    return render(request,"hod_template/manage_course_template.html",{"courses":courses})#passing the staff object
+
+def manage_subject(request):
+    subjects= Subjects.objects.all()
+    return render(request,"hod_template/manage_subject_template.html",{"subjects":subjects})#passing the staff object

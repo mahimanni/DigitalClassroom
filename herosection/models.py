@@ -52,7 +52,7 @@ class Subjects(models.Model):
     id= models.AutoField(primary_key=True)
     subject_name= models.CharField(max_length=255)
     course_id= models.ForeignKey(Courses, on_delete=models.CASCADE, default=1)#doing relation btw course id and subject
-    staff_id= models.ForeignKey(Staffs, on_delete=models.CASCADE)#adding staff field in subject model and linking using foreign key  
+    staff_id= models.ForeignKey(CustomUser, on_delete=models.CASCADE)#adding staff field in subject model and linking using foreign key  
     created_at= models.DateTimeField(auto_now_add=True)
     updated_at= models.DateTimeField(auto_now_add=True)
     objects= models.Manager()
