@@ -19,13 +19,15 @@ class AddStudentForm(forms.Form):
     for course in courses:
         small_course=(course.id,course.course_name)
         course_list.append(small_course)
+    course_list = [("", "Select Course")] + course_list  # Add a blank option at the beginning
 
     gender_choice=(
+        ("", "Select Gender"),  # Default placeholder option
         ("Male","Male"),
         ("Female","Female"),
         ("Other","Other")
     )
-
+    
     course=forms.ChoiceField(label="Course",choices=course_list,widget=forms.Select(attrs={"class":"form-control"}))
     sex=forms.ChoiceField(label="Sex",choices=gender_choice,widget=forms.Select(attrs={"class":"form-control"}))
     session_start=forms.DateField(label="Session Start",widget=DateInput(attrs={"class":"form-control"}))
