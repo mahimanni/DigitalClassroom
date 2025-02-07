@@ -1,9 +1,9 @@
 from django.urls import path
-from . import views, HodViews
+from . import views, HodViews, StaffViews, StudentViews
 
 urlpatterns = [
     path('demo/', views.demo_page, name='demo_page'),
-    path('',views.showLoginPage, name='login_page'),
+    path('',views.showLoginPage, name='show_login'),
     path('doLogin',views.doLogin,name='do_login'),
     path('getUserDetails', views.getUserDetails, name='getUserDetails'),
     path('logout_user', views.logout_user, name='logout'),
@@ -28,4 +28,10 @@ urlpatterns = [
     path('edit_subject_save',HodViews.edit_subject_save,name='edit_subject_save'),
     path('edit_course/<str:course_id>',HodViews.edit_course,name='edit_course'),
     path('edit_course_save',HodViews.edit_course_save,name='edit_course_save'),
+
+    # Staff url path
+    path('staff_home',StaffViews.staff_home,name='staff_home'),
+
+    # Student url path
+    path('student_home',StudentViews.student_home,name='student_home'),
 ]
