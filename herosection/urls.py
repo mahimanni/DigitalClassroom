@@ -34,4 +34,9 @@ urlpatterns = [
 
     # Student url path
     path('student_home',StudentViews.student_home,name='student_home'),
+
+    # Session url path
+    path('manage_session',HodViews.manage_session,name='manage_session'),
+    path('add_session_save',HodViews.add_session_save,name='add_session_save'),
+
 ]

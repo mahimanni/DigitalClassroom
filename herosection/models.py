@@ -6,6 +6,12 @@ from django.dispatch import receiver
 #Here overriding the default django auth user & adding one more field in this model which is User type
 #User Type1: Admin, 2:Staff, 3: Student
 
+class SessionYearModel(models.Model):
+    id= models.AutoField(primary_key= True)
+    session_start_year= models.DateField()
+    session_end_year= models.DateField()
+    object= models.Manager()
+
 #Creating class Custom User and Passing Parent AbstractUser so we can extend the Default Auth user
 class CustomUser(AbstractUser):
     user_type_data= ((1,"HOD"),(2,"Staff"),(3,"Student"))
@@ -68,8 +74,9 @@ class Students(models.Model):
     profile_pic= models.FileField()
     address= models.TextField()
     course_id= models.ForeignKey(Courses,on_delete=models.DO_NOTHING)#adding course field in Student model and relating it to course model using foreign key
-    session_start_year= models.DateField()
-    session_end_year=models.DateField()
+    # session_start_year= models.DateField()
+    # session_end_year=models.DateField()
+    session_year_id= models.ForeignKey(SessionYearModel, on_delete=models.CASCADE)
     created_at= models.DateTimeField(auto_now_add=True)
     updated_at= models.DateTimeField(auto_now_add=True)
     objects= models.Manager()
@@ -97,6 +104,7 @@ class Attendance(models.Model):
     id= models.AutoField(primary_key=True)
     subject_id= models.ForeignKey(Subjects, on_delete=models.DO_NOTHING)
     attendance_date= models.DateTimeField(auto_now_add=True)
+    session_year_id= models.ForeignKey(SessionYearModel, on_delete=models.CASCADE)
     created_at= models.DateTimeField(auto_now_add=True)
     updated_at= models.DateTimeField(auto_now_add=True)
     objects= models.Manager()
@@ -184,7 +192,7 @@ def create_user_profile(sender,instance,created,**kwargs):#taking parameter send
         if instance.user_type==2:
             Staffs.objects.create(admin=instance,address="")#here instance is CustomUser and user_type is 2
         if instance.user_type==3:
-            Students.objects.create(admin=instance,course_id=Courses.objects.get(id=1), session_start_year="2025-01-01", session_end_year="2028-01-01", address="", profile_pic="",gender="")
+            Students.objects.create(admin=instance,course_id=Courses.objects.get(id=1), session_year_id=SessionYearModel.object.get(id=1), address="", profile_pic="",gender="")
             #now on student create method setting default value of every field
         
 #this method will call after create_user_profile() execution
@@ -218,7 +226,7 @@ def save_user_profile(sender, instance, **kwargs):
     if instance.user_type == 3:
         try:
             # Fetch the Students instance and save it
-            students = Students.objects.get(admin=instance,course_id=Courses.objects.get(id=1), session_start_year="2025-01-01", session_end_year="2028-01-01", address="", profile_pic="",gender="")
+            students = Students.objects.get(admin=instance,course_id=Courses.objects.get(id=1), session_year_id=SessionYearModel.object.get(id=1), address="", profile_pic="",gender="")
             students.save()
         except Students.DoesNotExist:
             pass  # Student instance may not exist, no need to save it if it doesn't exist

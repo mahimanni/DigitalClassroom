@@ -1,6 +1,6 @@
 from django import forms
 
-from herosection.models import Courses
+from herosection.models import Courses, SessionYearModel
 
 #custom date input class
 class DateInput(forms.DateInput):
@@ -13,13 +13,16 @@ class AddStudentForm(forms.Form):
     last_name=forms.CharField(label="Last Name",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
     username=forms.CharField(label="Username",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
     address=forms.CharField(label="Address",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
-
-    courses=Courses.objects.all()
+    
     course_list=[]
+    # try:
+    courses=Courses.objects.all()
     for course in courses:
         small_course=(course.id,course.course_name)
         course_list.append(small_course)
     course_list = [("", "Select Course")] + course_list  # Add a blank option at the beginning
+    # except:
+    #     course_list=[]
 
     gender_choice=(
         ("", "Select Gender"),  # Default placeholder option
@@ -27,11 +30,21 @@ class AddStudentForm(forms.Form):
         ("Female","Female"),
         ("Other","Other")
     )
+
+    session_list=[]
+    try:
+        sessions=SessionYearModel.object.all()
+        for session in sessions:
+            small_session=(session.id,str(session.session_start_year)+"   TO   "+str(session.session_end_year))
+            session_list.append(small_session)
+        session_list = [("", "Select Session")] + session_list  # Add a blank option at the beginning
+    except:
+        session_list=[]
+
     
     course=forms.ChoiceField(label="Course",choices=course_list,widget=forms.Select(attrs={"class":"form-control"}))
     sex=forms.ChoiceField(label="Sex",choices=gender_choice,widget=forms.Select(attrs={"class":"form-control"}))
-    session_start=forms.DateField(label="Session Start",widget=DateInput(attrs={"class":"form-control"}))
-    session_end=forms.DateField(label="Session End",widget=DateInput(attrs={"class":"form-control"}))
+    session_year_id= forms.ChoiceField(label="Session Year",choices=session_list,widget=forms.Select(attrs={"class":"form-control"}))
     profile_pic=forms.FileField(label="Profile Pic",max_length=50,widget=forms.FileInput(attrs={"class":"form-control"}))
 
 class EditStudentForm(forms.Form):
@@ -40,9 +53,9 @@ class EditStudentForm(forms.Form):
     last_name=forms.CharField(label="Last Name",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
     username=forms.CharField(label="Username",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
     address=forms.CharField(label="Address",max_length=50,widget=forms.TextInput(attrs={"class":"form-control"}))
-
-    courses=Courses.objects.all()
+    
     course_list=[]
+    courses=Courses.objects.all()
     for course in courses:
         small_course=(course.id,course.course_name)
         course_list.append(small_course)
@@ -52,8 +65,16 @@ class EditStudentForm(forms.Form):
         ("Female","Female")
     )
 
+    session_list=[]
+    try:
+        sessions=SessionYearModel.object.all()
+        for session in sessions:
+            small_session=(session.id,str(session.session_start_year)+"   TO   "+str(session.session_end_year))
+            session_list.append(small_session)
+    except:
+        session_list=[]
+
     course=forms.ChoiceField(label="Course",choices=course_list,widget=forms.Select(attrs={"class":"form-control"}))
     sex=forms.ChoiceField(label="Sex",choices=gender_choice,widget=forms.Select(attrs={"class":"form-control"}))
-    session_start=forms.DateField(label="Session Start",widget=DateInput(attrs={"class":"form-control"}))
-    session_end=forms.DateField(label="Session End",widget=DateInput(attrs={"class":"form-control"}))
+    session_year_id= forms.ChoiceField(label="Session Year",choices=session_list,widget=forms.Select(attrs={"class":"form-control"}))
     profile_pic=forms.FileField(label="Profile Pic",max_length=50,widget=forms.FileInput(attrs={"class":"form-control"}),required=False)
