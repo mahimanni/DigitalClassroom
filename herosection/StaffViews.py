@@ -64,3 +64,59 @@ def save_attendance_data(request):
         return HttpResponse("OK")
     except:
         return HttpResponse("ERROR")
+    
+def staff_update_attendance(request):
+    subjects= Subjects.objects.filter(staff_id=request.user.id) #fetching all subjects of staff
+    session_year_id = SessionYearModel.object.all() 
+
+    return render(request,"staff_template/staff_update_attendance.html",{"subjects":subjects,"session_year_id":session_year_id})
+
+# return all attendance data of staff
+@csrf_exempt
+def get_attendance_dates(request):
+    subject= request.POST.get("subject")#creating subject variable and access the subject data coming from Ajax method
+    session_year_id= request.POST.get("session_year_id")
+    subject_obj= Subjects.objects.get(id=subject)# accessing all attendance date data of staff based on subject
+    session_year_obj= SessionYearModel.object.get(id=session_year_id)
+    attendance= Attendance.objects.filter(subject_id=subject_obj, session_year_id=session_year_obj)
+    attendance_obj=[]
+    for attendance_single in attendance:
+        data={"id":attendance_single.id,"attendance_date":str(attendance_single.attendance_date),"session_year_id":attendance_single.session_year_id.id}
+        attendance_obj.append(data)
+
+    return JsonResponse(json.dumps(attendance_obj),safe=False)
+
+@csrf_exempt
+def get_attendance_student(request):
+    attendance_date= request.POST.get("attendance_date") #contain attendance id
+    attendance= Attendance.objects.get(id=attendance_date)
+
+    attendance_data= AttendanceReport.objects.filter(attendance_id=attendance) #attendance report object which had all the attendance data
+    list_data=[]
+
+    for student in attendance_data:
+        data_small= {"id":student.student_id.admin.id, "name":student.student_id.admin.first_name+" "+student.student_id.admin.last_name, "status":student.status}
+        list_data.append(data_small)#now appending the object into list
+
+    return JsonResponse(json.dumps(list_data), content_type="application/json", safe=False) #returning json response
+
+
+@csrf_exempt
+def save_updateattendance_data(request):
+    student_ids= request.POST.get("student_ids")
+    attendance_date= request.POST.get("attendance_date")
+    attendance= Attendance.objects.get(id=attendance_date) #accessing Attendance object by id
+
+    json_sstudent= json.loads(student_ids)
+
+    try:
+        for stud in json_sstudent:
+            student= Students.objects.get(admin=stud['id'])# now accessing student object by ID
+            attendance_report= AttendanceReport.objects.get(student_id=student, attendance_id=attendance)# now creating attendance report object by passing data
+            attendance_report.status= stud['status'] #updating only status value
+            attendance_report.save()
+
+        return HttpResponse("OK")
+    except:
+        return HttpResponse("ERROR")
+    
