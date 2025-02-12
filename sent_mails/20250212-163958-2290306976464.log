@@ -1,0 +1,25 @@
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Password reset on 127.0.0.1:8000
+From: webmaster@localhost
+To: priyesh@gmail.com
+Date: Wed, 12 Feb 2025 11:09:58 -0000
+Message-ID: <173935859893.3220.4389232162302734967@Undivided.lan>
+
+
+You're receiving this email because you requested a password reset for your user account at 127.0.0.1:8000.
+
+Please go to the following page and choose a new password:
+
+http://127.0.0.1:8000/accounts/reset/OA/cl4eam-cf87175e7abbc686f968853018c18b1f/
+
+Your username, in case you’ve forgotten: Priyesh
+
+Thanks for using our site!
+
+The 127.0.0.1:8000 team
+
+
+
+-------------------------------------------------------------------------------

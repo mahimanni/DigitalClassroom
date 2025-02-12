@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -65,7 +66,7 @@ ROOT_URLCONF = 'Classroom.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['herosection/templates/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -136,3 +137,25 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# commenting this email back end code and sending mail using gmail email
+# EMAIL_BACKEND= "django.core.mail.backends.filebased.EmailBackend"
+# EMAIL_FILE_PATH= os.path.join(BASE_DIR,"sent_mails")# setting path for storing sent email
+
+
+# setting email host and port
+
+# Email configuration using environment variables
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+
+# EMAIL_HOST="smtp.gmail.com"
+# EMAIL_PORT=587
+# EMAIL_HOST_USER="serienm12@gmail.com"
+# EMAIL_HOST_PASSWORD= "serien"
+# EMAIL_USE_TLS= True
+# DEFAULT_FROM_EMAIL= " Digital Classroom System"
