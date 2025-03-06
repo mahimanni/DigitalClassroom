@@ -28,6 +28,9 @@ urlpatterns = [
     path('edit_subject_save',HodViews.edit_subject_save,name='edit_subject_save'),
     path('edit_course/<str:course_id>',HodViews.edit_course,name='edit_course'),
     path('edit_course_save',HodViews.edit_course_save,name='edit_course_save'),
+    # Session url path
+    path('manage_session',HodViews.manage_session,name='manage_session'),
+    path('add_session_save',HodViews.add_session_save,name='add_session_save'),
 
     # Staff url path
     path('staff_home',StaffViews.staff_home,name='staff_home'),
@@ -46,8 +49,7 @@ urlpatterns = [
 
     # Student url path
     path('student_home',StudentViews.student_home,name='student_home'),
+    path('student_view_attendance',StudentViews.student_view_attendance,name='student_view_attendance'),
+    path('student_view_attendance_post',StudentViews.student_view_attendance_post,name='student_view_attendance_post'),
 
-    # Session url path
-    path('manage_session',HodViews.manage_session,name='manage_session'),
-    path('add_session_save',HodViews.add_session_save,name='add_session_save'),
 ]

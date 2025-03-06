@@ -32,14 +32,14 @@ class AddStudentForm(forms.Form):
     )
 
     session_list=[]
-    try:
-        sessions=SessionYearModel.object.all()
-        for session in sessions:
-            small_session=(session.id,str(session.session_start_year)+"   TO   "+str(session.session_end_year))
-            session_list.append(small_session)
-        session_list = [("", "Select Session")] + session_list  # Add a blank option at the beginning
-    except:
-        session_list=[]
+    # try:
+    sessions=SessionYearModel.object.all()
+    for session in sessions:
+        small_session=(session.id,str(session.session_start_year)+"   TO   "+str(session.session_end_year))
+        session_list.append(small_session)
+    session_list = [("", "Select Session")] + session_list  # Add a blank option at the beginning
+    # except:
+    #     session_list=[]
 
     
     course=forms.ChoiceField(label="Course",choices=course_list,widget=forms.Select(attrs={"class":"form-control"}))
