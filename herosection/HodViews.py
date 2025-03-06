@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from herosection.models import CustomUser, Staffs, Courses, Subjects, Students, SessionYearModel
+from herosection.models import CustomUser, Staffs, Courses, Subjects, Students, SessionYearModel, FeedbackStudent, FeedbackStaffs
 from django.contrib import messages
 from django.urls import reverse
 import traceback 
@@ -360,3 +360,37 @@ def check_username_exist(request):
         return HttpResponse(True)
     else:
         return HttpResponse(False)
+    
+def staff_feedback_message(request):
+    feedbacks= FeedbackStaffs.objects.all()
+    return render(request, "hod_template/staff_feedback_template.html",{"feedbacks":feedbacks})
+
+def student_feedback_message(request):
+    feedbacks= FeedbackStudent.objects.all()
+    return render(request, "hod_template/student_feedback_template.html",{"feedbacks":feedbacks})
+
+@csrf_exempt
+def student_feedback_message_replied(request):
+    feedback_id= request.POST.get("id")
+    feedback_message= request.POST.get("message")
+
+    try:
+        feedback= FeedbackStudent.objects.get(id= feedback_id)
+        feedback.feedback_reply= feedback_message
+        feedback.save()
+        return HttpResponse("True")
+    except:
+        return HttpResponse("False")
+    
+@csrf_exempt
+def staff_feedback_message_replied(request):
+    feedback_id= request.POST.get("id")
+    feedback_message= request.POST.get("message")
+
+    try:
+        feedback= FeedbackStaffs.objects.get(id= feedback_id)
+        feedback.feedback_reply= feedback_message
+        feedback.save()
+        return HttpResponse("True")
+    except:
+        return HttpResponse("False")
