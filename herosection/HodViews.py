@@ -1,12 +1,13 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
-from herosection.models import CustomUser, Staffs, Courses, Subjects, Students, SessionYearModel, FeedbackStudent, FeedbackStaffs
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from herosection.models import CustomUser, Staffs, Courses, Subjects, Students, SessionYearModel, FeedbackStudent, FeedbackStaffs, LeaveReportStudent, LeaveReportStaff, Attendance, AttendanceReport
 from django.contrib import messages
 from django.urls import reverse
 import traceback 
 from django.core.files.storage import FileSystemStorage
 from herosection.forms import AddStudentForm, EditStudentForm
 from django.views.decorators.csrf import csrf_exempt
+import json
 
 def admin_home(request):
     return render(request,"hod_template/home_content.html")#now in home page returning the home_content.html
@@ -394,3 +395,68 @@ def staff_feedback_message_replied(request):
         return HttpResponse("True")
     except:
         return HttpResponse("False")
+
+def staff_leave_view(request):
+    leaves= LeaveReportStaff.objects.all()
+    return render(request, "hod_template/staff_leave_view.html",{"leaves":leaves})
+
+def staff_approve_leave(request,leave_id):
+    leave= LeaveReportStaff.objects.get(id=leave_id)
+    leave.leave_status=1
+    leave.save()
+    return HttpResponseRedirect(reverse("staff_leave_view"))
+
+def staff_disapprove_leave(request,leave_id):
+    leave= LeaveReportStaff.objects.get(id=leave_id)
+    leave.leave_status=2
+    leave.save()
+    return HttpResponseRedirect(reverse("staff_leave_view"))
+
+def student_leave_view(request):
+    leaves= LeaveReportStudent.objects.all()
+    return render(request, "hod_template/student_leave_view.html",{"leaves":leaves})
+
+def student_approve_leave(request,leave_id):
+    leave= LeaveReportStudent.objects.get(id=leave_id)
+    leave.leave_status=1
+    leave.save()
+    return HttpResponseRedirect(reverse("student_leave_view"))
+
+def student_disapprove_leave(request,leave_id):
+    leave= LeaveReportStudent.objects.get(id=leave_id)
+    leave.leave_status=2
+    leave.save()
+    return HttpResponseRedirect(reverse("student_leave_view"))
+
+def admin_view_attendance(request):
+    subjects= Subjects.objects.all() #fetching all subjects of staff
+    session_year_id = SessionYearModel.object.all() 
+    return render(request,"hod_template/admin_view_attendance.html",{"subjects":subjects,"session_year_id":session_year_id})
+
+@csrf_exempt
+def admin_get_attendance_dates(request):
+    subject= request.POST.get("subject")#creating subject variable and access the subject data coming from Ajax method
+    session_year_id= request.POST.get("session_year_id")
+    subject_obj= Subjects.objects.get(id=subject)# accessing all attendance date data of staff based on subject
+    session_year_obj= SessionYearModel.object.get(id=session_year_id)
+    attendance= Attendance.objects.filter(subject_id=subject_obj, session_year_id=session_year_obj)
+    attendance_obj=[]
+    for attendance_single in attendance:
+        data={"id":attendance_single.id,"attendance_date":str(attendance_single.attendance_date),"session_year_id":attendance_single.session_year_id.id}
+        attendance_obj.append(data)
+
+    return JsonResponse(json.dumps(attendance_obj),safe=False)
+
+@csrf_exempt
+def admin_get_attendance_student(request):
+    attendance_date= request.POST.get("attendance_date") #contain attendance id
+    attendance= Attendance.objects.get(id=attendance_date)
+
+    attendance_data= AttendanceReport.objects.filter(attendance_id=attendance) #attendance report object which had all the attendance data
+    list_data=[]
+
+    for student in attendance_data:
+        data_small= {"id":student.student_id.admin.id, "name":student.student_id.admin.first_name+" "+student.student_id.admin.last_name, "status":student.status}
+        list_data.append(data_small)#now appending the object into list
+
+    return JsonResponse(json.dumps(list_data), content_type="application/json", safe=False) #returning json response
